@@ -376,6 +376,47 @@ for x in data.select_dtypes(['int64','float64']):
 ## 5. Hypothesis Testing
 ### Compensation Equity
 - No significance found.
+#### All Employees and BIPOC Employees
+```sh
+#group employees by race and find descriptive statistics for total comp
+data.groupby('race').agg({'total comp': ['mean', 'count',np.std]})
+```
+| Race             | Count | Mean     | Standard Deviation |
+|------------------|-------|----------|--------------------|
+| African American | 90    | 91691.82 | 51803.04           |  
+| Asian            | 228   | 91386.77 | 51036.95           |
+| Caucasian        | 543   | 97807.10 | 65198.58           |
+| Hispanic         | 96    | 90118.37 | 48192.17           |
+| Other            | 43    | 99728.60 | 65269.07           |
+```sh
+#create boxplot of total comp by race to look for any obvious outliers
+data.boxplot(by = 'race', column = ['total comp'])
+```
+![comp boxplot by race](https://github.com/jakeqaverch/EDA/assets/170358772/1e17a25d-dd65-43d0-b05f-ef98694285a1)
+```sh
+bipoc = data[data['bipoc'] == True]
+caucasian = data[data['race'] == 'Caucasian']
+data.boxplot(by = 'bipoc', column = ['total comp'])
+ttest_ind(bipoc['total comp'], caucasian['total comp'])
+TtestResult(statistic=-1.545874354760165, pvalue=0.12245193827166366, df=998.0)
+```
+- While no significant outliers were found, I will compare groups individually
+#### African American and Caucasian employees
+```sh
+#perform independent t-test of compensation between african american and caucasian employees
+african_american = data[data['race'] == 'African American']
+ttest_ind(african_american['total comp'], caucasian['total comp'])
+TtestResult(statistic=-0.8464359312906196, pvalue=0.3976304858982638, df=631.0)
+```
+#### Hispanic and Caucasian employees
+```sh
+#perform independent t-test of compensation between hispanic and caucasian employees
+hispanic = data[data['race'] == 'Hispanic']
+ttest_ind(hispanic['total comp'], caucasian['total comp'])
+TtestResult(statistic=-1.1030956875388647, pvalue=0.2704021710633812, df=637.0)
+```
+- This is surprising. While the means are close, the standard deviation is much higher which indicates a greater range.
+
 
 ### BIPOC and Women Analysis
 - Executive team breakdown by race and gender: Executives are mostly white males.
