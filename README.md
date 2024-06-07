@@ -415,18 +415,138 @@ hispanic = data[data['race'] == 'Hispanic']
 ttest_ind(hispanic['total comp'], caucasian['total comp'])
 TtestResult(statistic=-1.1030956875388647, pvalue=0.2704021710633812, df=637.0)
 ```
-- This is surprising. While the means are close, the standard deviation is much higher which indicates a greater range.
+- This is surprising. While the means are close, the standard deviation is much higher which indicates a greater range. We will explore gender next.
+#### Male and Female Employees
+```sh
+data.groupby('gender').agg({'total comp': ['mean', 'count',np.std]})
+```
+| Gender | Count | Mean     | Standard Deviation |
+|--------|-------|----------|--------------------|
+| Female | 490   | 92673.48 | 53437.63           |  
+| Men    | 510   | 97504.68 | 64884.66           |
+```sh
+#create boxplot of above data
+data.groupby('gender').agg({'total comp': ['mean', 'count',np.std]})
+```
+![image](https://github.com/jakeqaverch/EDA/assets/170358772/4c2540d3-1ec8-478c-ae24-43ae6a802ee9)
 
+```sh
+#perform independent t-test to determine statistical significance between male and female total compensation and create boxplot to visualize the data
+male = data[data['gender'] == 'Male']
+female = data[data['gender'] == 'Female']
+ttest_ind(male['total comp'], female['total comp'])
+TtestResult(statistic=1.282466173840882, pvalue=0.19997695595504292, df=998.0)
+```
+-As we saw with race, the standard deviation is higher indicating greater spread. But nothing significant here.
 
 ### BIPOC and Women Analysis
 - Executive team breakdown by race and gender: Executives are mostly white males.
 - Tenure by race and gender: No significance found.
-- Junior Employees: Junior salespeople have above-average tenure and below-average compensation.
+
+### Executive Team Breakdown
+#### Executive Team Breakdown by Race
+```sh
+#define executive group as anyone at the executive level or above and determine the racial breakdown of this group
+execs = data[data['levelnumber'] >= 6]
+pd.DataFrame(execs["race"].value_counts(normalize=True))
+#visualize the above data
+pl.pie(execs["race"].value_counts(),labels = ['Caucasian(92%)', 'African American (8%)', ' ', ' ',' '])
+pl.show()
+```
+| Race             | Proportion |
+|------------------|------------|
+| African American | 0.08       |
+| Asian            | 0          |
+| Caucasian        | 0.92       |
+| Hispanic         | 0          |
+| Other            | 0          |
+
+![image](https://github.com/jakeqaverch/EDA/assets/170358772/9c782405-df1a-45a0-a570-ead2707f8ab5)
+
+-This is significant. Almost 92% of executives are white. We would need to investigate this further to deterimine the cause.
+
+#### Executive Team Breakdown by Gender
+```sh
+#find gender breakdown of executives defined above
+pd.DataFrame(execs["gender"].value_counts(normalize=True))
+#visualize the above data
+pl.pie(execs["gender"].value_counts(),labels = ['Male(92%)', 'Female (8%)'])
+pl.show()
+```
+| Gender | Proportion |
+|--------|------------|
+| Female | 0.08       |
+| Male   | 0.92       |
+
+![image](https://github.com/jakeqaverch/EDA/assets/170358772/8628f797-7fe4-4a01-93df-e53eac98ad27)
+
+- This is significant. Almost 92% of executives are male. We would need to investigate this further to deterimine the cause.
+
+### Tenure (all values in months) by Gender and Race
+#### Tenure by Gender
+```sh
+#create table of tenure by gender
+data.groupby('gender').agg({'tenure (months)': ['mean', 'count',np.std]})
+#visualize the above data
+data.boxplot(by = 'gender', column = ['tenure (months)'])
+```
+| Gender | Count | Mean  | Standard Deviation |
+|--------|-------|-------|--------------------|
+| Female | 490   | 52.10 | 28.32              |  
+| Men    | 510   | 52.53 | 28.22              |
+
+![image](https://github.com/jakeqaverch/EDA/assets/170358772/ab5f2c90-153b-4f60-a2ae-108baf87829d)
+```sh
+#perform independent t-test to determine confirm lack of statistical significance between male and female tenure
+ttest_ind(male['tenure (months)'], female['tenure (months)'])
+TtestResult(statistic=0.2423963737638562, pvalue=0.8085228469796168, df=998.0)
+```
+- Nothing signficant was found here. Let's explore race next.
+#### Tenure by Race
+-First let's compare BIPOC and Caucasian employees
+```sh
+#create table of tenure by BIPOC status
+data.groupby('bipoc').agg({'tenure (months)': ['mean', 'count',np.std]})
+#visualize above data
+data.boxplot(by = 'bipoc', column = ['tenure (months)'])
+```
+| Race      | Count | Mean  | Standard Deviation |
+|-----------|-------|-------|--------------------|
+| BIPOC     | 457   | 52.32 | 28.32              |  
+| Non-BIPOC | 543   | 52.73 | 28.23              |
+
+![image](https://github.com/jakeqaverch/EDA/assets/170358772/e0e60edb-77b6-400a-9b88-e4e6077cb2a0)
+
+```sh
+#perform independent t-test of BIPOC and non-BIPOC employee tenure
+ttest_ind(caucasian['tenure (months)'], bipoc['tenure (months)'])
+TtestResult(statistic=0.22813352262198297, pvalue=0.8195891719210135, df=998.0)
+```
+- Nothing significant here. Next let's explore groups individually
+
+```sh
+#create table of tenure by gender
+data.groupby('race').agg({'tenure (months)': ['mean', 'count',np.std]})
+#visualize the above data
+data.boxplot(by = 'race', column = ['tenure (months)'])
+```
+| Race             | Count | Mean  | Standard Deviation |
+|------------------|-------|-------|--------------------|
+| African American | 90    | 53.07 | 26.87              |  
+| Asian            | 228   | 51.68 | 28.50              |
+| Caucasian        | 543   | 52.51 | 28.22              |
+| Hispanic         | 96    | 54.14 | 28.82              |
+| Other            | 43    | 47.63 | 29.51              |
+
+![image](https://github.com/jakeqaverch/EDA/assets/170358772/fd619f39-12a3-47f7-b9c8-d59610d2c1d3)
+
+-Nothing signfiicant here.
 
 ### Additional Group Analysis
 - Department-wise analysis.
 - Tenure and tenure by department.
 - Compensation analysis.
+- Junior Employees: Junior salespeople have above-average tenure and below-average compensation.
 - Location-based analysis: High number of junior employees in SFO, fewer in Boston.
 
 ### Further Exploration
