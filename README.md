@@ -549,6 +549,138 @@ data.boxplot(by = 'race', column = ['tenure (months)'])
 - Junior Employees: Junior salespeople have above-average tenure and below-average compensation.
 - Location-based analysis: High number of junior employees in SFO, fewer in Boston.
 
+####Junior Employees
+```sh
+#define Junior employees as levels 2 and below and determine which department they sit in
+data["Junior"] = data['levelnumber']<=2
+juniornormed = data.groupby('department')['Junior'].value_counts(normalize = True)
+juniornonnormed = data.groupby('department')['Junior'].value_counts(normalize = False)
+result = pd.concat([juniornonnormed, juniornormed], axis=1)  # combine all results into a single dataframe
+print(result)
+```
+| Department               | Count | Proportion |
+|--------------------------|-------|------------|
+| Accounting               | 56    | 0.75       |
+| Admin                    | 0     | 0          |
+| Business Developmen      | 58    | 0.72       |
+| Human Resources          | 62    | 0.81       |
+| Legal                    | 70    | 0.74       |
+| Marketing                | 70    | 0.86       |
+| Product Management       | 72    | 0.77       |
+| Research and Development | 61    | 0.87       |
+| Sales                    | 78    | 0.83       |
+| Services                 | 71    | 0.79       |
+| Support                  | 77    | 0.80       |
+| Training                 | 51    | 0.71       |
+| Admin                    | 0     | 0.75       |
+
+-The Sales dept has a high number of junior employees.
+-R+D and Marketing have a high proportion of junior employees.
+-Let's explore this further and explore tenure
+
+##### Junior Employee Tenure
+-Mean Junior employee tenure is 52.30
+```sh
+#visualize tenure by department as a whole to see where recent hiring may have been
+data.boxplot(by = 'department', column = ['tenure (months)'], figsize = (7, 5), rot = 80, grid = False)
+```
+![image](https://github.com/jakeqaverch/EDA/assets/170358772/89079658-0096-47d9-8fa6-487b5e67d993)
+
+-Tenure in BD and Services is lower than average
+-Tenure in Accounting, Legal Sales, and Support is relatviely high
+-Let's look at Junior employees specifically
+```sh
+#determine avg tenure by department for junior employees
+junior_employees.groupby('department')['tenure (months)'].mean()
+```
+| Department               | Avg Tenure |
+|--------------------------|------------|
+| Accounting               | 58.21      |
+| Business Developmen      | 56.03      |
+| Engineering              | 56.03      |
+| Human Resources          | 50.41      |
+| Legal                    | 53.79      |
+| Marketing                | 49.53      |
+| Product Management       | 51.42      |
+| Research and Development | 52.51      |
+| Sales                    | 55.46      |
+| Services                 | 50.90      |
+| Support                  | 49.95      |
+| Training                 | 52.37      |
+-The Sales, Accounting and Engineering team have higher junior tenure next let's explore comepnsation next which is often determined by job type and location
+##### Junior Employee Tenure
+-Mean Junior Employee total compensation is $71261.45
+```sh
+#determine avg total comp by department for junior employees
+junior_employees.groupby(['department','city']).agg({"total comp" : ["count", "mean"]})
+```
+| Department               | City          | Count | Mean     |
+|--------------------------|---------------|-------|----------|
+| Accounting               | Boston        | 7     | 78504.60 |
+|                          | Chicago       | 5     | 67324.10 |
+|                          | New York      | 22    | 70429.68 |
+|                          | Remote        | 4     | 70662.11 |
+|                          | San Fransisco | 18    | 81669.47 |
+| Business Development     | Boston        | 7     | 76190.16 |
+|                          | Chicago       | 12    | 76257.37 |
+|                          | New York      | 10    | 74334.26 |
+|                          | Remote        | 6     | 72068.75 |
+|                          | San Fransisco | 23    | 73389.10 |
+| Engineering              | Boston        | 4     | 97521.06 |
+|                          | Chicago       | 12    | 95737.22 |
+|                          | New York      | 23    | 97652.15 |
+|                          | Remote        | 5     | 98806.18 |
+|                          | San Fransisco | 25    | 96256.20 |
+| Human Resources          | Boston        | 4     | 76770.34 |
+|                          | Chicago       | 5     | 55960.07 |
+|                          | New York      | 14    | 67199.11 |
+|                          | Remote        | 5     | 60029.50 |
+|                          | San Fransisco | 31    | 60553.23 |
+| Legal                    | Boston        | 3     | 62566.75 |
+|                          | Chicago       | 10    | 73129.43 |
+|                          | New York      | 18    | 78834.04 |
+|                          | Remote        | 5     | 68450.39 |
+|                          | San Fransisco | 26    | 72286.72 |
+| Marketing                | Boston        | 6     | 67215.99 |
+|                          | Chicago       | 16    | 68532.34 |
+|                          | New York      | 12    | 72848.87 |
+|                          | Remote        | 6     | 72465.50 |
+|                          | San Fransisco | 30    | 71299.12 |
+| Product Management       | Boston        | 3     | 62445.33 |
+|                          | Chicago       | 20    | 84983.96 |
+|                          | New York      | 17    | 88662.47 |
+|                          | Remote        | 6     | 81515.82 |
+|                          | San Fransisco | 26    | 74914.83 |
+| Research and Development	| Boston        | 4     | 94268.20 |
+|                          | Chicago       | 16    | 85578.17 |
+|                          | New York      | 14    | 94030.18 |
+|                          | Remote        | 8     | 89654.37 |
+|                          | San Fransisco | 19    | 91147.32 |
+| Sales                   	| Boston        | 6     | 56983.83 |
+|                          | Chicago       | 12    | 51642.33 |
+|                          | New York      | 17    | 51780.62 |
+|                          | Remote        | 7     | 55442.74 |
+|                          | San Fransisco | 36    | 54468.03 |
+| Services                	| Boston        | 7     | 49011.55 |
+|                          | Chicago       | 15    | 56778.19 |
+|                          | New York      | 13    | 59434.48 |
+|                          | Remote        | 6     | 65383.22 |
+|                          | San Fransisco | 30    | 59717.50 |
+| Support                 	| Boston        | 5     | 78556.00 |
+|                          | Chicago       | 15    | 69552.34 |
+|                          | New York      | 23    | 61522.39 |
+|                          | Remote        | 9     | 69508.79 |
+|                          | San Fransisco | 25    | 65067.09 |
+| Training                	| Boston        | 6     | 51584.08 |
+|                          | Chicago       | 7     | 51775.36 |
+|                          | New York      | 12    | 58051.08 |
+|                          | Remote        | 5     | 52036.07 |
+|                          | San Fransisco | 21    | 50175.10 |
+
+-TAKAWAYS
+
+
+
 ### Further Exploration
 - Tenure by level: Indicates lower tenure at the executive level, requiring more data to understand why.
 - Bonus percentage by department and level: No significant outliers found.
