@@ -543,9 +543,9 @@ data.boxplot(by = 'race', column = ['tenure (months)'])
 -Nothing signfiicant here.
 
 ### Additional Group Analysis
-- Department-wise analysis.
-- Tenure and tenure by department.
-- Compensation analysis.
+- Department-wise analysis. SHOULD THIS BE HERE
+- Tenure and tenure by level.
+- Compensation (bonus %) analysis.
 - Junior Employees: Junior salespeople have above-average tenure and below-average compensation.
 - Location-based analysis: High number of junior employees in SFO, fewer in Boston.
 
@@ -607,6 +607,7 @@ junior_employees.groupby('department')['tenure (months)'].mean()
 | Services                 | 50.90      |
 | Support                  | 49.95      |
 | Training                 | 52.37      |
+
 -The Sales, Accounting and Engineering team have higher junior tenure next let's explore comepnsation next which is often determined by job type and location
 ##### Junior Employee Tenure
 -Mean Junior Employee total compensation is $71261.45
@@ -677,9 +678,163 @@ junior_employees.groupby(['department','city']).agg({"total comp" : ["count", "m
 |                          | Remote        | 5     | 52036.07 |
 |                          | San Fransisco | 21    | 50175.10 |
 
--TAKAWAYS
+-Junior sales people have above average tenure and below average compensation. We need more data to explore further but it is interesting.
+-A bulk of entry level talent has been hired in SF which is a very expensive market. This should be examined further.
+-There are very few remote junior employees across the organization.
 
+#### Tenure by Level
+```sh
+#boxplot of tenure by level
+data.boxplot(by = 'levelnumber', column = 'tenure (months)', figsize = (5, 5))
+```
+![image](https://github.com/jakeqaverch/EDA/assets/170358772/d72d1419-8024-4c19-abae-21599ddbb2ae)
 
+- Tenure at the executive level is relatviely low. There could be many reaons for this so it would require more data to explore further. It could be an issue of small sample size.
+
+#### Compensation Analysis: Bonus %
+```sh
+#boxplot of tenure by level
+data.boxplot(by = 'levelnumber', column = 'tenure (months)', figsize = (5, 5))
+```
+| Department               | Level        | Bonus % Mean | Bonus % Std  |
+|--------------------------|--------------|--------------|--------------|
+| Accounting               | Entry Level	 | 33           |	4.97         |                 
+|                          | Junior       |	23	          | 10.04        |
+|                          | Mid-Level	   | 12	          | 14.71        |
+|                          | Senior       |	4	           | 19.60        | 
+|                          | VP	          | 2            |	31.52        |
+|                          | Executive    |	1	           | 32.01        |
+| Admin                    |	CEO	         | 1	           | 32.34        |
+| Business Development	    | Entry Level	 | 33           |	4.97         |
+|                          | Junior       |	25	          | 10.08        |
+|                          | Mid-Level	   | 15	          | 14.93        |
+|                          | Senior	      | 4	           | 20.2         |
+|                          | VP           |	3	           | 32.12        |
+|                          | Executive	   | 1	           | 35.97        |
+| Engineering	             | Entry Level	 | 36	          | 4.91         |
+|                          | Junior	      | 33	          | 9.97         |
+|                          | Mid-Level	   | 14	          | 15.09        |
+|                          | Senior	      | 3	           | 19.53        |
+|                          | VP	          | 1            |	34.98        |
+|                          | Executive    |	1	           | 34.32        |
+| Human Resources          |	Entry Level  |	29	          | 4.88         |
+|                          | Junior	      | 30           |	10.00        |
+|                          | Mid-Level    |	4	           | 14.51        |
+|                          | Senior	      | 5            |	21.16        | 
+|                          | VP           |	4	           | 32.84        |
+|                          | Executive	   | 1            |	34.65        |
+| Legal                    | Entry Level	 | 35	          | 5.00         |
+|                          | Junior       |	27	          | 10.04        |
+|                          | Mid-Level    |	14	          | 14.75        |
+|                          | Senior	      | 8	           | 19.68        |
+| Marketing                | Entry Level	 | 40           |	5.018        |
+|                          | Junior	      | 30	          | 10.02        |
+|                          | Mid-Level	   | 7	           | 14.74        |
+|                          | Senior	      | 3	           | 19.53        | 
+|                          | Executive	   | 1	           | 32.67        |
+| Product Management       | Entry Level	 | 34           |	4.92         |
+|                          | Junior       |	38           |	10.01        | 
+|                          | Mid-Level    |	9	           | 15.02        |
+|                          | Senior       |	10	          | 20.02        |
+|                          | VP           |	2	           | 35.31        |
+|                          | Executive    |	1	           | 35.97        |
+| Research and Development | Entry Level  |	35	          | 5.07         |
+|                          | Junior       |	26           | 9.96         |
+|                          | Mid-Level	   | 5	           | 14.79        |
+|                          | Senior	      | 3	           | 19.80        |
+|                          | VP           |	1	           | 34.98        |
+|                          | Executive    |	1            |	32.01        |
+| Sales                    | Entry Level	 | 48           |	4.95         |
+|                          | Executive	   | 1	           | 36.3         |
+|                          | Junior       |	30	          | 9.92         | 
+|                          | Mid-Level    |	9	           | 14.37        |
+|                          | Senior       | 4	           | 19.20        |
+|                          | VP	          | 2	           | 33.50        |
+Services	                  | Entry Level  |	33           |	4.95         |
+|                          | Junior      	| 38           |	10.05        |
+|                          | Mid-Level	   | 11	          | 15.20        |
+|                          | Senior      	| 7            | 20.03        |
+|                          | Executive   	| 1	           | 34.65        |
+|Support                  	| Entry Level  | 38           | 5.051        |
+|                          | Junior	      | 39           |	10.05        |
+|                          | Mid-Level    |	14	          | 15.32        |
+|                          | Senior       | 3           	| 19.73        |
+|                          | VP           |	1	           | 33.33        |
+|                          | Executive    |	1	           | 30.69        |
+|Training                  | Entry Level  |	30          	| 4.98         |
+|                          | Junior	      | 21           | 10.24        |
+|                          | Mid-Level    | 12	          | 15.03        |
+|                          | Senior	      | 5	           | 19.80        |
+|                          | VP	          |3             |	33.00        |
+|                          | Executive	   | 1	           | 31.68        |
+
+- Bonus % does not vary much by level and department nothing significant here.
+
+#### Location Based Analysis
+##### Overall Location Data
+```sh
+#breakdown of numeric variables by city
+citylvl = data.groupby("city").agg({"levelnumber" : ["count", "mean",np.std]}) #find city level data
+citytenure = data.groupby("city").agg({"tenure (months)" : ["mean", np.std]}) #find city tenure data
+citycomp = data.groupby("city").agg({"total comp" : ["mean", np.std]}) #find comp level data
+cityage = data.groupby("city").agg({"age" : ["mean", np.std]}) #find age level data
+citytable = pd.concat([citylvl,citytenure,citycomp,cityage], axis=1) #combine data
+citytable #print data
+```
+| City          | Count | Level (Mean) | Level (Std) | Tenure (Mean) | Tenure (Std) | Total Comp (Mean) | Total Comp (Std) | Age (Mean) | Age (Std) |
+|---------------|-------|--------------|-------------|---------------|--------------|-------------------|------------------|------------|-----------|
+| Boston        | 88    | 2.07         | 1.08        | 57.06         | 27.48        | 99964.04          | 59445.33         | 30.27      | 6.96      |
+| Chicago       | 191   | 2.07	        | 1.24        |	49.50         |	28.45        | 105016.77         |	74807.67         |	29.52      | 7.42      |
+| New York      | 246   | 1.95	        | 1.14        |	50.69         | 28.10        |	96212.92          |	60034.90         |	28.60      |	5.61      |
+| Remote        | 84    | 1.74	        | 0.89        |	55.19         |	28.18        |	85182.90          | 43679.38         | 28.02      |	5.71      |
+| San Francisco | 391   | 1.87	        | 0.98        | 53.04         |	28.36        |	90687.00          |	53011.22         |	28.69      | 5.69      |
+
+- It looks like Boston has higher mean level number with low varience let's explore this further below.
+- Remote compesnation is conserderably lower with  a lower varience which is not surpiresing.
+- Chicago compensation is higher with higher than average varience which should be investigated further.
+
+##### Locaiton Level Data Expanded
+```sh
+#deeper dive into level and location data
+citylevelnonrm = data.groupby('city')['level'].value_counts(normalize=True) #normalized city location data
+citylevelnonnrm = data.groupby('city')['level'].value_counts(normalize=False) #non-normalized city location data
+execloc = pd.concat([citylevelnonnrm,citylevelnonrm], axis=1) #combine data
+execloc #print data
+```
+| City          | Level       | Count | %     | 
+|---------------|-------------|-------|-------|
+| Boston	       | Entry Level	| 33	   | 0.38  |
+|               | Junior	     | 29	   | 0.33  |
+|               | Mid-Level	  | 15	   | 0.17  |
+|               | Senior	     | 9     |	0.10  |
+|               | VP	         | 2	    | 0.023 |
+| Chicago	      | Entry Level	| 81    | 0.42  |
+|               | Junior	     | 64    |	0.34  |
+|               | Mid-Level	  | 20	   | 0.10  |
+|               | Senior	     | 14	   | 0.073 |
+|               | VP	         | 8	    | 0.042 |
+|               | Executive	  | 4     |	0.02  |
+| New York      |	Entry Level	| 102	  | 0.41  |
+|               | Junior	     | 93    |	0.38  |
+|               | Mid-Level   |	28	   | 0.11  |
+|               | Senior	     | 15    |	0.06  |
+|               | Executive	  | 4	    | 0.016 |
+|               | VP          |	3	    | 0.012 |
+|               | CEO	        | 1	    | 0.004 |
+| Remote	       | Entry Level |	39    |	0.46  |
+|               | Junior	     | 33    |	0.39  |
+|               | Mid-Level	  | 9     |	0.11  |
+|               | Senior	     | 2     |	0.024 | 
+|               | Executive	  | 1     |	0.012 |
+| San Francisco | Entry Level	| 169   |	0.43  |
+|               | Junior	     | 141   |	0.36  |
+|               | Mid-Level	  | 54	   | 0.14  |
+|               | Senior	     | 19	   | 0.049 |
+|               | VP	         | 6     |	0.015 |
+|               | Executive   |	2     |	0.005 |
+
+ - There are not as many junior employees in Boston.
+ - There is a high number of junior employees in SFO which is an expensive market to hire into.
 
 ### Further Exploration
 - Tenure by level: Indicates lower tenure at the executive level, requiring more data to understand why.
