@@ -112,6 +112,7 @@ for i in data.select_dtypes(['category']):
 - Majority of the individuals are Caucasian (54.3% of the dataset), followed by Asians (22.8%)
 - Significant portion of the workforce is at the Entry Level (42.4%) and Junior level (36%), indicating a young or early-career workforce. Senior levels make up a smaller fraction, which is typical as organizational pyramids narrow at the top
 -  Majority of employees are based in San Francisco and New York. Interestingly, we have some remote employees as well
+-  The admin role is just the CEO
 
 ```sh
 # generate and print descriptive statistics for numeric variables
@@ -132,6 +133,8 @@ for x in data.select_dtypes(['int64', 'float64']):
 | 75%       | 2.000      |
 | Max       | 8.000      |
 
+-  Relatively lower skew this with a low standard deviation which indicates that there are a large number of low level employees.
+  
 #### Descriptive Statistics for Salary
 
 | Statistic | Value      |
@@ -144,6 +147,9 @@ for x in data.select_dtypes(['int64', 'float64']):
 | 50% (Median) | $72,749.00 |
 | 75%       | $93,815.00 |
 | Max       | $288,502.00 |
+
+-  Very high varience in compensation overall.
+-  There are major outliers on the high end as expected. 
 
 #### Descriptive Statistics for Bonus
 
@@ -158,6 +164,8 @@ for x in data.select_dtypes(['int64', 'float64']):
 | 75%       | $9,663.54  |
 | Max       | $99,355.09 |
 
+-  The same as above high varience with many outliers on the high end as expected.
+  
 #### Descriptive Statistics for Age
 
 | Statistic | Value    |
@@ -171,7 +179,7 @@ for x in data.select_dtypes(['int64', 'float64']):
 | 75%       | 30.0000  |
 | Max       | 60.0000  |
 
-
+-  Relatively skewed towards the younger side as expected given that there are many lower level employees.
 
 ## 3. Feature Engineering
 - Created the following additional columns for further exploration:
@@ -200,7 +208,6 @@ data['total comp'].describe()
 | Max       | $387,515.89     |
 
 - The average total compensation is $95,137.39, with a wide range from $26,164.59 to $387,515.89, indicating significant variation in employee earnings.
-
 
 #### Tenure (months)
 
