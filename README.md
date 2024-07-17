@@ -3,45 +3,7 @@
 
 This project explores the dataset through the following steps:
 
-## 1. Import Libraries and Dataset
-```sh
-# import libraries and set options
-import pandas as pd
-from scipy.stats import ttest_ind
-import matplotlib.pyplot as pl
-import datetime as dt
-import numpy as np
-import math
-import seaborn as sns
-import networkx as nx
-pd.set_option('display.max_rows', 100)
-```
- 
-```sh
-# import dataset
-data = pd.read_csv(
-    "/content/mydata - mydata.csv",  # Path to the data - CSV file
-    dtype={  # Specify data types for specific columns
-        "gender": "category",      # Gender as a categorical variable
-        'managerid': 'string',     # Manager ID as a string
-        "race": "category",        # Race as a categorical variable
-        "level": "category",       # Level as a categorical variable
-        "levelnumber": "int64",    # Level number as an integer
-        "city": "category",        # City as a categorical variable
-        "department": "category"   # Department as a categorical variable
-    },
-    index_col='id',                # Set the 'id' column as the index
-    parse_dates=['startdate'],     # Parse the 'startdate' column as dates
-    date_format='%Y-%m-%d'         # Specify the date format for 'startdate'
-).sort_index()                     # Sort the DataFrame by index
-```
-
-
-## 2. Data Overview and Data Cleaning 
-```sh
-# check the overview of the data
-data.info() 
-```
+Data Overview and Data Cleaning 
 
 ![image](https://github.com/Hello-DataSkillUp/Jake_EDA1/assets/165890395/4dde8ad6-68ef-41a5-a990-68249c8c9015)
 
@@ -49,16 +11,6 @@ data.info()
 - The dataset has 13 columns and 1000 entries. 
 - Each columns data type is identified. 
 - Every column except manager ID has 1000 non - null values, indicating almost no missing data. 
-
-
-```sh
-# get count and proportion for all categorical variables
-for i in data.select_dtypes(['category']):
-    normed = pd.DataFrame(data[i].value_counts(normalize = False))  # gives counts
-    nonnormed = pd.DataFrame(data[i].value_counts(normalize = True))  # gives proportions
-    result = pd.concat([normed, nonnormed], axis=1)  # combine results into a single dataframe
-    print(result)
-```
 
 | Gender | Count | Proportion |
 |--------|-------|------------|
@@ -113,12 +65,6 @@ for i in data.select_dtypes(['category']):
 - Significant portion of the workforce is at the Entry Level (42.4%) and Junior level (36%), indicating a young or early-career workforce. Senior levels make up a smaller fraction, which is typical as organizational pyramids narrow at the top
 -  Majority of employees are based in San Francisco and New York. Interestingly, we have some remote employees as well
 -  The admin role is just the CEO
-
-```sh
-# generate and print descriptive statistics for numeric variables
-for x in data.select_dtypes(['int64', 'float64']):
-    print(pd.DataFrame(data[x].describe()))
-```
 
 #### Descriptive Statistics for Level Number
 
@@ -190,12 +136,6 @@ for x in data.select_dtypes(['int64', 'float64']):
 
 #### Total Compensation 
 
-```sh
-# new column for total compensation
-data["total comp"] = data["bonus"] + data["salary"]
-data['total comp'].describe()
-```
-
 | Statistic | Value           |
 |-----------|-----------------|
 | Count     | 1000.000000     |
@@ -210,14 +150,6 @@ data['total comp'].describe()
 - The average total compensation is $95,137.39, with a wide range from $26,164.59 to $387,515.89, indicating significant variation in employee earnings.
 
 #### Tenure (months)
-
-```sh
-# new column for tenure in months + find the descriptive statistics
-today = pd.to_datetime(dt.date.today())
-data['tenure (months)'] = (((today- data['startdate'])) /  np.timedelta64(1, 'D') / 30.417).astype('int64')
-data['tenure (months)'].describe()
-```
-
 
 | Statistic | Value           |
 |-----------|-----------------|
@@ -234,13 +166,6 @@ data['tenure (months)'].describe()
 
 #### Bonus %
 
-```sh
-# new column for bonus % for every employee and descriptive stats
-data["bonus %"] = (data['bonus']/data['salary'])*100
-data["bonus %"].describe()
-```
-
-
 | Statistic | Value           |
 |-----------|-----------------|
 | Count     | 1000.000000     |
@@ -256,31 +181,11 @@ data["bonus %"].describe()
 
 #### BIPOC Column
 
-```sh
-# create BIPOC Column
-data["bipoc"] = data["race"].str.contains('|'.join(['Asian', 'Hispanic','African American','Other']), regex=True)
-data
-```
-
 - The BIPOC column is created by identifying individuals whose race is categorized as Asian, Hispanic, African American, or Other, highlighting diversity within the workforce.
 - If an entry matches any of these categories listed in str.contains(), bipoc column  will returns True, otherwise it returns False.
 
 
-## 4. Data Exploration by Groups
-
-
-```sh
-# Explore numeric data by groups
-for i in data.select_dtypes(['category']):
-    normed = pd.DataFrame(data[i].value_counts(normalize = False))  # counts for each category
-    nonnormed = pd.DataFrame(data[i].value_counts(normalize = True))  # proportions for each category
-    tenure = pd.DataFrame(data.groupby(i)['tenure (months)'].mean())  # average tenure by category
-    totalcomp = pd.DataFrame(data.groupby(i)['total comp'].mean())  # average total compensation by category
-    bonus = pd.DataFrame(data.groupby(i)['bonus %'].mean())  # average bonus percentage by category
-    result = pd.concat([normed, nonnormed, tenure, totalcomp, bonus], axis=1)  # combine all results into a single dataframe
-    print(result)
-```
-
+## Data Exploration by Groups
 #### Descriptive Statistics by Gender
 
 | Gender | Count | Proportion | Tenure (Months) | Total Comp | Bonus % |
@@ -352,15 +257,6 @@ From the tables above we see that:
 - As employees rise from entry to executive levels, there is a clear upward trend in both total compensation and bonus percentage, highlighting a strong correlation between seniority and earnings.
 - Employees in Chicago have the highest average total compensation among the cities listed, while San Francisco, with the largest employee base, has the lowest average total compensation but a moderate bonus percentage.
 
-
-
-```sh
-# create histograms for each of the numeric variables
-for x in data.select_dtypes(['int64','float64']):
-   sns.displot(data[x], kde=False, height = 8)
-```
-
-
 <img width="570" alt="image" src="https://github.com/Hello-DataSkillUp/Jake_EDA1/assets/165890395/d24b1dc5-17b4-4ed1-8bbf-93390a903af2">
 
 <img width="581" alt="image" src="https://github.com/Hello-DataSkillUp/Jake_EDA1/assets/165890395/f287715d-083b-4de7-956d-c99bf0f7c3ed">
@@ -375,19 +271,11 @@ for x in data.select_dtypes(['int64','float64']):
 
 <img width="596" alt="image" src="https://github.com/Hello-DataSkillUp/Jake_EDA1/assets/165890395/1d465e3e-ffd4-423a-9b7d-9e801d02b9a6">
 
-
-
-
-
-
-## 5. Hypothesis Testing
+## Hypothesis Testing
 ### Compensation Equity
 - No significance found.
 #### All Employees and BIPOC Employees
-```sh
-#group employees by race and find descriptive statistics for total comp
-data.groupby('race').agg({'total comp': ['mean', 'count',np.std]})
-```
+
 | Race             | Count | Mean     | Standard Deviation |
 |------------------|-------|----------|--------------------|
 | African American | 90    | 91691.82 | 51803.04           |  
@@ -395,55 +283,25 @@ data.groupby('race').agg({'total comp': ['mean', 'count',np.std]})
 | Caucasian        | 543   | 97807.10 | 65198.58           |
 | Hispanic         | 96    | 90118.37 | 48192.17           |
 | Other            | 43    | 99728.60 | 65269.07           |
-```sh
-#create boxplot of total comp by race to look for any obvious outliers
-data.boxplot(by = 'race', column = ['total comp'])
-```
+
 ![comp boxplot by race](https://github.com/jakeqaverch/EDA/assets/170358772/1e17a25d-dd65-43d0-b05f-ef98694285a1)
-```sh
-bipoc = data[data['bipoc'] == True]
-caucasian = data[data['race'] == 'Caucasian']
-data.boxplot(by = 'bipoc', column = ['total comp'])
-ttest_ind(bipoc['total comp'], caucasian['total comp'])
-TtestResult(statistic=-1.545874354760165, pvalue=0.12245193827166366, df=998.0)
-```
+
 - While no significant outliers were found, I will compare groups individually
 #### African American and Caucasian employees
-```sh
-#perform independent t-test of compensation between african american and caucasian employees
-african_american = data[data['race'] == 'African American']
-ttest_ind(african_american['total comp'], caucasian['total comp'])
-TtestResult(statistic=-0.8464359312906196, pvalue=0.3976304858982638, df=631.0)
-```
+
 #### Hispanic and Caucasian employees
-```sh
-#perform independent t-test of compensation between hispanic and caucasian employees
-hispanic = data[data['race'] == 'Hispanic']
-ttest_ind(hispanic['total comp'], caucasian['total comp'])
-TtestResult(statistic=-1.1030956875388647, pvalue=0.2704021710633812, df=637.0)
-```
+
 - This is surprising. While the means are close, the standard deviation is much higher which indicates a greater range. We will explore gender next.
 #### Male and Female Employees
-```sh
-data.groupby('gender').agg({'total comp': ['mean', 'count',np.std]})
-```
+
 | Gender | Count | Mean     | Standard Deviation |
 |--------|-------|----------|--------------------|
 | Female | 490   | 92673.48 | 53437.63           |  
 | Men    | 510   | 97504.68 | 64884.66           |
-```sh
-#create boxplot of above data
-data.groupby('gender').agg({'total comp': ['mean', 'count',np.std]})
-```
+
 ![image](https://github.com/jakeqaverch/EDA/assets/170358772/4c2540d3-1ec8-478c-ae24-43ae6a802ee9)
 
-```sh
-#perform independent t-test to determine statistical significance between male and female total compensation and create boxplot to visualize the data
-male = data[data['gender'] == 'Male']
-female = data[data['gender'] == 'Female']
-ttest_ind(male['total comp'], female['total comp'])
-TtestResult(statistic=1.282466173840882, pvalue=0.19997695595504292, df=998.0)
-```
+
 -As we saw with race, the standard deviation is higher indicating greater spread. But nothing significant here.
 
 ### BIPOC and Women Analysis
@@ -452,14 +310,7 @@ TtestResult(statistic=1.282466173840882, pvalue=0.19997695595504292, df=998.0)
 
 ### Executive Team Breakdown
 #### Executive Team Breakdown by Race
-```sh
-#define executive group as anyone at the executive level or above and determine the racial breakdown of this group
-execs = data[data['levelnumber'] >= 6]
-pd.DataFrame(execs["race"].value_counts(normalize=True))
-#visualize the above data
-pl.pie(execs["race"].value_counts(),labels = ['Caucasian(92%)', 'African American (8%)', ' ', ' ',' '])
-pl.show()
-```
+
 | Race             | Proportion |
 |------------------|------------|
 | African American | 0.08       |
@@ -473,13 +324,7 @@ pl.show()
 -This is significant. Almost 92% of executives are white. We would need to investigate this further to deterimine the cause.
 
 #### Executive Team Breakdown by Gender
-```sh
-#find gender breakdown of executives defined above
-pd.DataFrame(execs["gender"].value_counts(normalize=True))
-#visualize the above data
-pl.pie(execs["gender"].value_counts(),labels = ['Male(92%)', 'Female (8%)'])
-pl.show()
-```
+
 | Gender | Proportion |
 |--------|------------|
 | Female | 0.08       |
@@ -491,32 +336,18 @@ pl.show()
 
 ### Tenure (all values in months) by Gender and Race
 #### Tenure by Gender
-```sh
-#create table of tenure by gender
-data.groupby('gender').agg({'tenure (months)': ['mean', 'count',np.std]})
-#visualize the above data
-data.boxplot(by = 'gender', column = ['tenure (months)'])
-```
+
 | Gender | Count | Mean  | Standard Deviation |
 |--------|-------|-------|--------------------|
 | Female | 490   | 52.10 | 28.32              |  
 | Men    | 510   | 52.53 | 28.22              |
 
 ![image](https://github.com/jakeqaverch/EDA/assets/170358772/ab5f2c90-153b-4f60-a2ae-108baf87829d)
-```sh
-#perform independent t-test to determine confirm lack of statistical significance between male and female tenure
-ttest_ind(male['tenure (months)'], female['tenure (months)'])
-TtestResult(statistic=0.2423963737638562, pvalue=0.8085228469796168, df=998.0)
-```
+
 - Nothing signficant was found here. Let's explore race next.
 #### Tenure by Race
 -First let's compare BIPOC and Caucasian employees
-```sh
-#create table of tenure by BIPOC status
-data.groupby('bipoc').agg({'tenure (months)': ['mean', 'count',np.std]})
-#visualize above data
-data.boxplot(by = 'bipoc', column = ['tenure (months)'])
-```
+
 | Race      | Count | Mean  | Standard Deviation |
 |-----------|-------|-------|--------------------|
 | BIPOC     | 457   | 52.32 | 28.32              |  
@@ -524,19 +355,10 @@ data.boxplot(by = 'bipoc', column = ['tenure (months)'])
 
 ![image](https://github.com/jakeqaverch/EDA/assets/170358772/e0e60edb-77b6-400a-9b88-e4e6077cb2a0)
 
-```sh
-#perform independent t-test of BIPOC and non-BIPOC employee tenure
-ttest_ind(caucasian['tenure (months)'], bipoc['tenure (months)'])
-TtestResult(statistic=0.22813352262198297, pvalue=0.8195891719210135, df=998.0)
-```
+
 - Nothing significant here. Next let's explore groups individually
 
-```sh
-#create table of tenure by gender
-data.groupby('race').agg({'tenure (months)': ['mean', 'count',np.std]})
-#visualize the above data
-data.boxplot(by = 'race', column = ['tenure (months)'])
-```
+
 | Race             | Count | Mean  | Standard Deviation |
 |------------------|-------|-------|--------------------|
 | African American | 90    | 53.07 | 26.87              |  
@@ -557,14 +379,7 @@ data.boxplot(by = 'race', column = ['tenure (months)'])
 - Location-based analysis: High number of junior employees in SFO, fewer in Boston.
 
 ####Junior Employees
-```sh
-#define Junior employees as levels 2 and below and determine which department they sit in
-data["Junior"] = data['levelnumber']<=2
-juniornormed = data.groupby('department')['Junior'].value_counts(normalize = True)
-juniornonnormed = data.groupby('department')['Junior'].value_counts(normalize = False)
-result = pd.concat([juniornonnormed, juniornormed], axis=1)  # combine all results into a single dataframe
-print(result)
-```
+
 | Department               | Count | Proportion |
 |--------------------------|-------|------------|
 | Accounting               | 56    | 0.75       |
@@ -587,19 +402,13 @@ print(result)
 
 ##### Junior Employee Tenure
 -Mean Junior employee tenure is 52.30
-```sh
-#visualize tenure by department as a whole to see where recent hiring may have been
-data.boxplot(by = 'department', column = ['tenure (months)'], figsize = (7, 5), rot = 80, grid = False)
-```
+
 ![image](https://github.com/jakeqaverch/EDA/assets/170358772/89079658-0096-47d9-8fa6-487b5e67d993)
 
 -Tenure in BD and Services is lower than average
 -Tenure in Accounting, Legal Sales, and Support is relatviely high
 -Let's look at Junior employees specifically
-```sh
-#determine avg tenure by department for junior employees
-junior_employees.groupby('department')['tenure (months)'].mean()
-```
+
 | Department               | Avg Tenure |
 |--------------------------|------------|
 | Accounting               | 58.21      |
@@ -618,10 +427,7 @@ junior_employees.groupby('department')['tenure (months)'].mean()
 -The Sales, Accounting and Engineering team have higher junior tenure next let's explore comepnsation next which is often determined by job type and location
 ##### Junior Employee Tenure
 -Mean Junior Employee total compensation is $71261.45
-```sh
-#determine avg total comp by department for junior employees
-junior_employees.groupby(['department','city']).agg({"total comp" : ["count", "mean"]})
-```
+
 | Department               | City          | Count | Mean     |
 |--------------------------|---------------|-------|----------|
 | Accounting               | Boston        | 7     | 78504.60 |
@@ -690,19 +496,13 @@ junior_employees.groupby(['department','city']).agg({"total comp" : ["count", "m
 -There are very few remote junior employees across the organization.
 
 #### Tenure by Level
-```sh
-#boxplot of tenure by level
-data.boxplot(by = 'levelnumber', column = 'tenure (months)', figsize = (5, 5))
-```
+
 ![image](https://github.com/jakeqaverch/EDA/assets/170358772/d72d1419-8024-4c19-abae-21599ddbb2ae)
 
 - Tenure at the executive level is relatviely low. There could be many reaons for this so it would require more data to explore further. It could be an issue of small sample size.
 
 #### Compensation Analysis: Bonus %
-```sh
-#boxplot of tenure by level
-data.boxplot(by = 'levelnumber', column = 'tenure (months)', figsize = (5, 5))
-```
+
 | Department               | Level        | Bonus % Mean | Bonus % Std  |
 |--------------------------|--------------|--------------|--------------|
 | Accounting               | Entry Level	 | 33           |	4.97         |                 
@@ -779,15 +579,7 @@ Services	                  | Entry Level  |	33           |	4.95         |
 
 #### Location Based Analysis
 ##### Overall Location Data
-```sh
-#breakdown of numeric variables by city
-citylvl = data.groupby("city").agg({"levelnumber" : ["count", "mean",np.std]}) #find city level data
-citytenure = data.groupby("city").agg({"tenure (months)" : ["mean", np.std]}) #find city tenure data
-citycomp = data.groupby("city").agg({"total comp" : ["mean", np.std]}) #find comp level data
-cityage = data.groupby("city").agg({"age" : ["mean", np.std]}) #find age level data
-citytable = pd.concat([citylvl,citytenure,citycomp,cityage], axis=1) #combine data
-citytable #print data
-```
+
 | City          | Count | Level (Mean) | Level (Std) | Tenure (Mean) | Tenure (Std) | Total Comp (Mean) | Total Comp (Std) | Age (Mean) | Age (Std) |
 |---------------|-------|--------------|-------------|---------------|--------------|-------------------|------------------|------------|-----------|
 | Boston        | 88    | 2.07         | 1.08        | 57.06         | 27.48        | 99964.04          | 59445.33         | 30.27      | 6.96      |
@@ -801,13 +593,7 @@ citytable #print data
 - Chicago compensation is higher with higher than average varience which should be investigated further.
 
 ##### Locaiton Level Data Expanded
-```sh
-#deeper dive into level and location data
-citylevelnonrm = data.groupby('city')['level'].value_counts(normalize=True) #normalized city location data
-citylevelnonnrm = data.groupby('city')['level'].value_counts(normalize=False) #non-normalized city location data
-execloc = pd.concat([citylevelnonnrm,citylevelnonrm], axis=1) #combine data
-execloc #print data
-```
+
 | City          | Level       | Count | %     | 
 |---------------|-------------|-------|-------|
 | Boston	       | Entry Level	| 33	   | 0.38  |
